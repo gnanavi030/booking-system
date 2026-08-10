@@ -167,6 +167,11 @@ export default function BookingList({
 
  const bookings =
   bookingsData?.data || [];
+const isWeekend =
+  new Date(selectedDate).getDay() === 0 ||
+  new Date(selectedDate).getDay() === 6;
+
+
 
 const total =
   bookingsData?.total || 0;
@@ -221,19 +226,19 @@ if (isLoading) {
           
           flexDirection: "column",
 
-          borderRadius: "24px",
+          borderRadius: "12px",
 
           background:
-            "rgba(255,255,255,.08)",
+            "#162033",
 
           backdropFilter:
-            "blur(20px)",
+            "none",
 
           border:
             "1px solid rgba(255,255,255,.12)",
 
           boxShadow:
-            "0 20px 40px rgba(0,0,0,.25)",
+            "none",
 
           color: "white",
         }}
@@ -244,7 +249,7 @@ if (isLoading) {
           justifyContent="space-between"
           alignItems="center"
           flexWrap="wrap"
-          gap={2}
+          gap={1.25}
         >
           <Typography
             fontSize={14}
@@ -277,19 +282,23 @@ if (isLoading) {
               type="date"
               size="small"
               sx={{
-  color: "#FFFFFF",
-  background:
-    "rgba(255,255,255,.08)",
+  background: "rgba(255,255,255,.08)",
+  borderRadius: "12px",
 
-  "& .MuiOutlinedInput-notchedOutline": {
-    borderColor:
-      "rgba(255,255,255,.25)",
-  },
-
-  "& .MuiSvgIcon-root": {
+  "& input": {
     color: "#FFFFFF",
   },
+
+  "& input::-webkit-calendar-picker-indicator": {
+    filter: "invert(1)",
+    cursor: "pointer",
+  },
+
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "rgba(255,255,255,.25)",
+  },
 }}
+
               value={selectedDate}
               onChange={(e) =>
                 setSelectedDate(
@@ -338,28 +347,25 @@ if (isLoading) {
 
       
 
-      <Paper
-        sx={{
-          p: 3,
-         
+ <Paper
+  sx={{
+    p: 2,
+    height: "calc(100vh - 280px)",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
 
-          background:
-            "rgba(255,255,255,.08)",
+    background: "#162033",
 
-          backdropFilter:
-            "blur(20px)",
+    border: "1px solid rgba(255,255,255,.06)",
 
-          border:
-            "1px solid rgba(255,255,255,.12)",
-          
-          borderRadius: "24px",
+    borderRadius: "12px",
 
-          color: "white",
+    boxShadow: "none",
 
-
-                
-        }}
-      >
+    color: "white",
+  }}
+>
         <Box
           sx={{
             overflowX: "auto",
@@ -375,24 +381,27 @@ if (isLoading) {
         ></Box>
 
         </Box>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns:
-              "220px 220px 220px 180px 220px",
-            alignItems: "center",
+       <Box
+  sx={{
+    display: "grid",
+    gridTemplateColumns:
+      "220px 220px 220px 180px 220px",
+    alignItems: "center",
 
-            p: 1.8,
+    p: 1.4,
 
-            mb: 0.8,
-            minHeight: "56px",
+    mb: 1,
 
-            borderRadius: "12px",
+    minHeight: "48px",
 
-            background:
-              "rgba(255,255,255,.05)",
-          }}
-        >
+    borderRadius: "8px",
+
+    background: "#202C44",
+
+    border:
+      "1px solid rgba(255,255,255,.05)",
+  }}
+>
           <Typography fontWeight={700}>
             Room
           </Typography>
@@ -413,41 +422,74 @@ if (isLoading) {
             Actions
           </Typography>
         </Box>
-        
 
-      {bookings.map((b: any) => {
+<Box
+  sx={{
+    flex: 1,
+    overflowY: "auto",
+    overflowX: "hidden",
+    pr: 1,
+    minHeight: 0,
+  }}
+>
+  {isWeekend && (
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+      color: "rgba(255,255,255,.7)",
+      fontSize: "16px",
+      fontWeight: 600,
+    }}
+  >
+    No bookings available on weekends
+  </Box>
+)}
+
+      {!isWeekend &&
+         bookings.map((b: any) => {
+
+     
           const canManageBooking =
             isAdmin ||
             b.user_name === currentUsername;
 
           return (
             <Box
-              key={b.id}
-            sx={{
-              display: "grid",
-              gridTemplateColumns:
-                "220px 220px 220px 180px 220px",
+  key={b.id}
+  sx={{
+    display: "grid",
+    gridTemplateColumns:
+      "220px 220px 220px 180px 220px",
 
-              alignItems: "center",
+    alignItems: "center",
 
-              p: 1.2,
+    p: 1,
 
-              mb: 1,
+    mb: 0.75,
 
-              borderRadius: "16px",
+    minHeight: "52px",
 
-              background:
-                "rgba(255,255,255,.04)",
+    borderRadius: "8px",
 
-              border:
-                "1px solid rgba(255,255,255,.08)",
+    background: "#1A2438",
 
-              borderLeft: `4px solid ${
-                roomColors[b.room_name] ||
-                "#ccc"
-              }`,
-            }}
-          >
+    border:
+      "1px solid rgba(255,255,255,.04)",
+
+    borderLeft: `4px solid ${
+      roomColors[b.room_name] || "#ccc"
+    }`,
+
+    transition: "0.2s",
+
+    "&:hover": {
+      background: "#22304A",
+    },
+  }}
+>
             
             <Typography
   fontWeight={700}
@@ -489,50 +531,59 @@ if (isLoading) {
               {b.reason}
             </Typography>
 
-            <Box
-              display="flex"
-              gap={1}
-            >
+           <Box display="flex" gap={1}>
               {hasPermission("booking:update") &&
                 canManageBooking && (
                   <Button
-              variant="contained"
-              size="small"
-              sx={{
-                textTransform: "none",
-                minWidth: "80px",
-                height: "36px",
-                borderRadius: "10px",
-              }}
-                              >
+                    variant="contained"
+                    size="small"
+                    onClick={() => {
+                      setSelected(b);
+                      setShowModal(true);
+                    }}
+                    sx={{
+                      textTransform: "none",
+                      minWidth: "72px",
+                      height: "32px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                    }}
+                  >
                     Edit
                   </Button>
-              )}
+                )}
+
               {hasPermission("booking:delete") &&
                 canManageBooking && (
                   <Button
-                  variant="contained"
-                  color="error"
-                  size="small"
-                  sx={{
-                    textTransform: "none",
-                    minWidth: "90px",
-                    height: "36px",
-                    borderRadius: "10px",
-                  }}
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    onClick={() => {
+                      setBookingToDelete(b.id);
+                      setConfirmOpen(true);
+                    }}
+                    sx={{
+                      textTransform: "none",
+                      minWidth: "80px",
+                      height: "32px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                    }}
                   >
                     Delete
                   </Button>
-              )}
+                )}
             </Box>
-          </Box>
-          );
-        })}
+            </Box>
+            );
+            })}
+            </Box>
       
         
         <Box
   sx={{
-    mt: 3,
+    mt: "auto",
     pt: 2,
     borderTop: "1px solid rgba(255,255,255,.1)",
 

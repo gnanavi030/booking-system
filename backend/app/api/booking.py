@@ -41,7 +41,8 @@ def create_booking(
 
     except Exception as e:
         print("❌ CREATE ERROR:", e)
-        raise HTTPException(status_code=500, detail="Unexpected error occurred")
+
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ✅ GET BOOKINGS

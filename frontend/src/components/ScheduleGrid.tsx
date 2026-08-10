@@ -17,6 +17,9 @@ export default function ScheduleGrid({
   onEdit,
   onDelete,
 }: any) {
+  console.log("onEdit =", onEdit);
+  console.log("onDelete =", onDelete);
+
   const [open, setOpen] =
     useState(false);
 
@@ -74,18 +77,45 @@ export default function ScheduleGrid({
       .join(" ");
 
   const handleBookingClick = (
-    booking: any
-  ) => {
-    setSelectedBooking(booking);
-    setOpen(true);
-  };
+  booking: any
+) => {
+  setSelectedBooking(booking);
+  setOpen(true);
+};
 
+const isWeekend =
+  new Date(currentDateStr).getDay() === 0 ||
+  new Date(currentDateStr).getDay() === 6;
+
+if (isWeekend) {
   return (
-    <>
+    <Paper
+      sx={{
+        p: 3,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "white",
+        background: "rgba(255,255,255,.08)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,.12)",
+        borderRadius: "24px",
+      }}
+    >
+      No bookings available on weekends
+    </Paper>
+  );
+}
+
+return (
+  <>
    <Paper
         sx={{
           p: 3,
           height: "100%",
+          overflow:"auto",
+          boxSizing: "border-box",
          
         
 
@@ -132,7 +162,8 @@ export default function ScheduleGrid({
         <Box
           sx={{
             flex: 1,
-            overflow: "hidden",
+            overflowY: "auto",
+            overflowX: "auto",
             minHeight: 0,
             
           }}
@@ -150,6 +181,9 @@ export default function ScheduleGrid({
                     ) ===
                       currentDateStr)
               );
+            const isWeekend =
+              new Date(currentDateStr).getDay() === 0 ||
+              new Date(currentDateStr).getDay() === 6;
 
             return (
              <Box
@@ -418,11 +452,14 @@ export default function ScheduleGrid({
                   sx={{
                     background:
                       "linear-gradient(135deg,#3B82F6,#8B5CF6)",
+                    textTransform: "none",
                   }}
                   onClick={() => {
-                    onEdit?.(
-                      selectedBooking
-                    );
+                    console.log("EDIT BUTTON CLICKED");
+                    console.log(selectedBooking);
+
+                    onEdit?.(selectedBooking);
+
                     setOpen(false);
                   }}
                 >
@@ -433,18 +470,15 @@ export default function ScheduleGrid({
                   fullWidth
                   variant="contained"
                   color="error"
+                  sx={{
+                    textTransform: "none",
+                  }}
                   onClick={() => {
-                    if (
-                      confirm(
-                        "Delete this booking?"
-                      )
-                    ) {
-                      onDelete?.(
-                        selectedBooking.id
-                      );
+                    onDelete?.(
+                      selectedBooking.id
+                    );
 
-                      setOpen(false);
-                    }
+                    setOpen(false);
                   }}
                 >
                   Delete

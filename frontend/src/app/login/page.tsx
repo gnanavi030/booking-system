@@ -202,7 +202,14 @@ localStorage.setItem(
   JSON.stringify(me.permissions)
 );
 
-    router.push("/?login=1");
+if (me.roles?.includes("Viewer")) {
+  router.push("/booking");
+} else {
+  router.push("/");
+}
+
+
+    
     } catch (err: any) {
       setMessage(
         err?.data?.detail ??

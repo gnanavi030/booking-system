@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import AppSkeleton from "./skeletons/AppSkeleton";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 export default function DashboardCards() {
  const router = useRouter();
 
@@ -16,7 +19,8 @@ if (loading) {
 
   const cards = [
     {
-      icon: "📋",
+      
+      icon: <LibraryBooksIcon sx={{ fontSize: 26 }} />,
       title: "Bookings",
       description: "Manage room reservations",
       route: "/list",
@@ -27,7 +31,7 @@ if (loading) {
     },
 
     {
-      icon: "📅",
+      icon: <CalendarMonthIcon sx={{ fontSize: 26 }} />,
       title: "Calendar",
       description: "View schedules",
       route: "/calendar",
@@ -38,7 +42,7 @@ if (loading) {
     },
 
     {
-      icon: "➕",
+      icon: <MeetingRoomIcon sx={{ fontSize: 26 }} />,
       title: "Reserve",
       description: "Create a booking",
       route: "/booking",
@@ -175,7 +179,7 @@ if (loading) {
               alignItems: "center",
               justifyContent: "center",
 
-              fontSize: "30px",
+              fontSize: "20px",
 
               background: card.gradient,
 

@@ -11,6 +11,12 @@ import {
   CircularProgress,
   
 } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 
 
 
@@ -25,7 +31,7 @@ import { useSnackbar } from "notistack";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import BookingConflictAlert from "./BookingConflictAlert";
+
 
 
 
@@ -69,8 +75,7 @@ export default function BookingForm({
 ] = useCreateBookingMutation();
 
   const { enqueueSnackbar } = useSnackbar();
-  const [conflictMessage, setConflictMessage] =
-    useState("");
+  
 
   const [conflictBooking, setConflictBooking] =
     useState<any>(null);
@@ -120,6 +125,10 @@ export default function BookingForm({
     control,
     name: "capacity",
   });
+  const roomName = useWatch({
+  control,
+  name: "roomName",
+});
 
   const { data: availabilityData } = useGetAvailabilityQuery(
     {
@@ -176,14 +185,41 @@ export default function BookingForm({
       );
     }
   }, [setValue]);
+useEffect(() => {
+  if (!roomName) return;
+
+  const room = rooms.find(
+    (r: any) => r.name === roomName
+  );
+
+  if (room) {
+    setValue(
+      "capacity",
+      String(room.capacity)
+    );
+  }
+}, [roomName, rooms, setValue]);
 
   const onSubmit = async (data: any) => {
-    const selectedRoom = rooms.find(
-      (r: any) => r.name === data.roomName
-    );
+
+    const day = new Date(data.date).getDay();
+
+if (day === 0 || day === 6) {
+  enqueueSnackbar(
+    "Bookings are not allowed on weekends",
+    {
+      variant: "error",
+    }
+  );
+
+  return;
+}
+   
 
     const enteredCapacity = Number(data.capacity);
-
+    const selectedRoom = rooms.find(
+  (r: any) => r.name === data.roomName
+);
     const roomCapacity = Number(
       selectedRoom?.capacity
     );
@@ -285,6 +321,7 @@ export default function BookingForm({
     ) || [];
 
   const roomsToShow =
+  
     availableRooms.length > 0
       ? rooms.filter((r: any) =>
           availableRooms.includes(r.name)
@@ -292,93 +329,158 @@ export default function BookingForm({
       : rooms;
 
       const glassField = {
-        "& .MuiOutlinedInput-root": {
-          background:
-            "rgba(255,255,255,.08)",
+  "& .MuiOutlinedInput-root": {
+    background: "rgba(255,255,255,.08)",
+    backdropFilter: "blur(20px)",
+    borderRadius: "14px",
+    color: "white",
+    minHeight: "42px",
 
-          backdropFilter:
-            "blur(20px)",
+    "& fieldset": {
+      borderColor: "rgba(255,255,255,.12)",
+    },
 
-          borderRadius: "14px",
+    "&:hover fieldset": {
+      borderColor: "rgba(255,255,255,.2)",
+    },
 
-          color: "white",
-        },
+    "&.Mui-focused fieldset": {
+      borderColor: "#4F8CFF",
+    },
+  },
 
-        "& input": {
-          color: "white",
-        },
+  "& input": {
+    color: "white",
+  },
 
-        "& .MuiInputLabel-root": {
-          color:
-            "rgba(255,255,255,.7)",
-        },
+  "& .MuiSvgIcon-root": {
+    color: "rgba(255,255,255,.65)",
+  },
 
-        "& .MuiOutlinedInput-notchedOutline": {
-          borderColor:
-            "rgba(255,255,255,.12)",
-        },
-
-        "& .MuiFormHelperText-root": {
-          color: "#FCA5A5",
-        },
-      };
+  "& .MuiFormHelperText-root": {
+    color: "#FCA5A5",
+  },
+};
 
 
 
   return (
     <>
       
+<Box
+  sx={{
+  
+    width: "100%",
+
+    height: "100%",
+    p: 3,
+
+    overflowY: "auto",
+    overflowX: "hidden",
+    borderRadius: "0",
+    border: "1px solid rgba(255,255,255,.12)",
+    background: "rgba(15,23,42,.97)",
+    backdropFilter: "blur(24px)",
+
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background: "rgba(255,255,255,.25)",
+      borderRadius: "10px",
+    },
+  }}
+>
+  <Typography
+  sx={{
+    color: "white",
+    fontWeight: 700,
+    fontSize: "28px",
+    mb: 3,
+  }}
+>
+  Reserve Workspace
+</Typography>
+
+<Box
+  sx={{
+    mb: 2,
+    p: 2,
+    borderRadius: "12px",
+    background: "rgba(255,255,255,.05)",
+    border: "1px solid rgba(255,255,255,.08)",
+  }}
+>
+  <Typography
+    sx={{
+      color: "#93C5FD",
+      fontSize: "12px",
+      fontWeight: 700,
+      mb: 0.5,
+    }}
+  >
+    User Name
+  </Typography>
+
+  <TextField
+    fullWidth
+    size="small"
+    value={
+      localStorage.getItem("user")?.split("@")[0] || ""
+    }
+    InputProps={{
+      readOnly: true,
+    }}
+    sx={glassField}
+  />
+
+  <Typography
+    sx={{
+      color: "#93C5FD",
+      fontSize: "12px",
+      fontWeight: 700,
+      mt: 2,
+      mb: 0.5,
+    }}
+  >
+    User ID
+  </Typography>
+
+  <TextField
+    fullWidth
+    size="small"
+    value={
+      localStorage.getItem("user") || ""
+    }
+    InputProps={{
+      readOnly: true,
+    }}
+    sx={glassField}
+  />
+</Box>
+
+<Box
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+    gap: 0.25,
+    mt: 1,
+    pb: 0,
+  }}
+>
 
 
-      <Box>
         
-      <BookingConflictAlert
-        booking={conflictBooking}
-      />
 
-
-
-
-       <Box
-        
-        display="flex"
-        flexDirection="column"
-        gap={2}
-        mt={2}
-      >
           <Typography
-            fontSize="13px"
-            fontWeight={600}
-            color="white"
-          >
-            User Name *
-          </Typography>
-
-          <Controller
-            name="userName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                size="small"
-                sx={glassField}
-                {...field}
-                InputProps={{
-                  readOnly: true,
-                }}
-                error={!!errors.userName}
-                helperText={
-                  errors.userName?.message
-                }
-              />
-            )}
-          />
-        
-
-          <Typography
-             fontSize="13px"
-            fontWeight={600}
-            color="white"
-            >
+  sx={{
+    fontSize: "13px",
+    fontWeight: 700,
+    color: "#FFFFFF",
+    mb: 0.25,
+  }}
+>
             Room *
           </Typography>
 
@@ -386,32 +488,55 @@ export default function BookingForm({
             name="roomName"
             control={control}
             render={({ field }) => (
-              <Select
-                size="small"
-                {...field}
-                
-                sx={{
-                    
-                  ...glassField,
-                    "& .MuiInputBase-root": {
-                      height: 44,
-                    },
+           <Select
+    size="small"
+    {...field}
+    MenuProps={{
+    PaperProps: {
+      sx: {
+        background: "#1A2238",
+        color: "white",
+        borderRadius: "12px",
 
-                    background:
-                      "rgba(255,255,255,.08)",
+        "& .MuiMenuItem-root:hover": {
+          background:
+            "rgba(255,255,255,.08)",
+        },
 
-                    borderRadius: "14px",
+        "& .Mui-selected": {
+          background:
+            "rgba(91,140,255,.25) !important",
+        },
+      },
+    },
+  }}
+  sx={{
+    background: "rgba(255,255,255,.08)",
+    borderRadius: "12px",
+    color: "white",
 
-                    color: "white",
+    "& .MuiSelect-select": {
+      py: 1,
+    },
 
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor:
-                        "rgba(255,255,255,.12)",
-                    },
-                  }}
+    "& .MuiSvgIcon-root": {
+      color: "rgba(255,255,255,.7)",
+    },
+
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor:
+        "rgba(255,255,255,.12)",
+    },
+
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor:
+        "rgba(255,255,255,.25)",
+    },
+  }}
+>
 
                 error={!!errors.roomName}
-              >
+              
                 {roomsToShow.map((r: any) => (
                   <MenuItem
                     key={r.id}
@@ -424,11 +549,15 @@ export default function BookingForm({
             )}
           />
 
+
           <Typography
-            fontSize="13px"
-            fontWeight={600}
-            color="white"
-            >
+            sx={{
+              color: "rgba(255,255,255,.85)",
+              fontWeight: 500,
+              mt: 1,
+              mb: 0.5,
+            }}
+          >
             Capacity *
           </Typography>
 
@@ -528,26 +657,51 @@ export default function BookingForm({
             name="reason"
             control={control}
             render={({ field }) => (
-              <Select
-                size="small"
-                {...field}
-                
-            sx={{
-                background:
-                  "rgba(255,255,255,.08)",
+            <Select
+  size="small"
+  {...field}
+  MenuProps={{
+    PaperProps: {
+      sx: {
+        background: "#1A2238",
+        color: "white",
+        borderRadius: "12px",
 
-                borderRadius: "14px",
+        "& .MuiMenuItem-root:hover": {
+          background:
+            "rgba(255,255,255,.08)",
+        },
 
-                color: "white",
+        "& .Mui-selected": {
+          background:
+            "rgba(91,140,255,.25) !important",
+        },
+      },
+    },
+  }}
+  sx={{
+    background: "rgba(255,255,255,.08)",
+    borderRadius: "12px",
+    color: "white",
 
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor:
-                    "rgba(255,255,255,.12)",
-                },
-              }}
+    "& .MuiSelect-select": {
+      py: 1,
+    },
+
+    "& .MuiSvgIcon-root": {
+      color: "rgba(255,255,255,.7)",
+    },
+
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor:
+        "rgba(255,255,255,.12)",
+    },
+  }}
+>
+
 
                 error={!!errors.reason}
-              >
+              
                 <MenuItem value="">
                   Select Reason
                 </MenuItem>
@@ -569,46 +723,53 @@ export default function BookingForm({
                 <MenuItem value="Other">
                   Other
                 </MenuItem>
-              </Select>
-            )}
-          />
-        </Box>
-      </Box>
+             </Select>
+              )}
+              />
 
-      <Box
-        mt={3}
-        display="flex"
-        gap={2}
-      >
-
-
-      <Button
-  onClick={handleSubmit(onSubmit)}
-  variant="contained"
-  disabled={isCreatingBooking}
+              <Box
   sx={{
-    px: 4,
-    py: 1,
-    borderRadius: "12px",
-    fontWeight: 700,
-    textTransform: "none",
+    mt: 4,
+    pt: 3,
+    pb: 0,
+    display: "flex",
+    gap: 2,
+
+ 
+
     background:
-      "linear-gradient(135deg,#3B82F6,#8B5CF6)",
+      "linear-gradient(135deg,#1A1F3A,#132A40)",
+
+    borderTop:
+      "1px solid rgba(255,255,255,.08)",
   }}
 >
-  {isCreatingBooking ? (
-    <>
-      <CircularProgress
-        size={18}
-        color="inherit"
-        sx={{ mr: 1 }}
-      />
-      Creating Booking...
-    </>
-  ) : (
-    "📅 Book Room"
-  )}
-</Button>
+
+      <Button
+        onClick={handleSubmit(onSubmit)}
+        variant="contained"
+        disabled={isCreatingBooking}
+        sx={{
+        flex: 1,
+        textTransform: "none",
+        borderRadius: "10px",
+        background:
+          "linear-gradient(135deg,#3B82F6,#2563EB)",
+      }}
+            >
+        {isCreatingBooking ? (
+          <>
+            <CircularProgress
+              size={18}
+              color="inherit"
+              sx={{ mr: 1 }}
+            />
+            Creating Booking...
+          </>
+        ) : (
+          "Reserve Room"
+        )}
+      </Button>
 
 
 
@@ -621,18 +782,106 @@ export default function BookingForm({
 
         
           variant="outlined"
-          sx={{
-            borderRadius: "12px",
-            textTransform: "none",
-            borderColor:
-              "rgba(255,255,255,.2)",
-            color:"white",
-          }}
+        sx={{
+          textTransform: "none",
+          color: "white",
+        }}
          
         >
-          Close
+          Cancel
         </Button>
+        </Box>
+        </Box>
+        
       </Box>
+      <Dialog
+        open={!!conflictBooking}
+        onClose={() => setConflictBooking(null)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            background:
+              "linear-gradient(135deg,#162033,#1E293B)",
+            color: "white",
+            borderRadius: "18px",
+            border:
+              "1px solid rgba(255,255,255,.08)",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#FCA5A5",
+            fontWeight: 600,
+            borderBottom:
+              "1px solid rgba(255,255,255,.08)",
+          }}
+        >
+    ⚠️ Booking Conflict
+        </DialogTitle>
+
+        <DialogContent
+        sx={{
+          pt: 3,
+          color: "white",
+        }}
+      >
+    {conflictBooking && (
+      <>
+        <Typography sx={{ mb: 1 }}>
+          <strong>Room:</strong>{" "}
+          {conflictBooking.room_name}
+        </Typography>
+
+        <Typography sx={{ mb: 1 }}>
+          <strong>Booked By:</strong>{" "}
+          {conflictBooking.user_name}
+        </Typography>
+
+        <Typography sx={{ mb: 2 }}>
+          <strong>Time:</strong>{" "}
+          {conflictBooking.start_time}
+          {" - "}
+          {conflictBooking.end_time}
+        </Typography>
+
+        <Box
+          sx={{
+            p: 2,
+            borderRadius: "12px",
+            background:
+              "rgba(239,68,68,.15)",
+            border:
+              "1px solid rgba(239,68,68,.35)",
+            color: "#FCA5A5",
+          }}
+        >
+          This room is already reserved for
+          the selected time slot.
+        </Box>
+      </>
+    )}
+  </DialogContent>
+
+  <DialogActions
+    sx={{
+      px: 3,
+      pb: 2,
+    }}
+  >
+    <Button
+      variant="contained"
+      color="error"
+      onClick={() =>
+        setConflictBooking(null)
+      }
+    >
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </>
   );
 }

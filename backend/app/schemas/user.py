@@ -27,11 +27,22 @@ class UserUpdate(BaseModel):
 
 
 # ✅ RESPONSE SCHEMA
+from typing import List
+
+
 class UserResponse(BaseModel):
     id: int
     username: str
     email: EmailStr
+    roles: List[str]
 
     class Config:
-        from_attributes = True  # ✅ REQUIRED for SQLAlchemy
+        from_attributes = True
         orm_mode = True
+
+
+from typing import Literal
+
+
+class AssignRoleRequest(BaseModel):
+    role: Literal["Admin", "Employee", "Viewer"]

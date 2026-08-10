@@ -7,6 +7,7 @@ from app.core.security import (
     hash_password,
     verify_password,
 )
+from app.models.role import Role
 
 
 def register_user(data):
@@ -32,6 +33,15 @@ def register_user(data):
         )
 
         db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        # Assign Viewer role automatically
+        viewer_role = db.query(Role).filter(Role.name == "Viewer").first()
+
+        if viewer_role:
+            new_user.roles.append(viewer_role)
+
         db.commit()
         db.refresh(new_user)
 

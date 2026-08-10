@@ -205,7 +205,15 @@ resetPassword: builder.mutation({
   }),
   invalidatesTags: ["Users"],
 }),
-
+  
+  updateUserRole: builder.mutation({
+  query: ({ userId, role }) => ({
+    url: `users/${userId}/role`,
+    method: "PUT",
+    body: { role },
+  }),
+  invalidatesTags: ["Users"],
+}),
 
 
 
@@ -289,4 +297,5 @@ export const {
   useUpdateUserMutation,
   useUpdateMyProfileMutation,
   useDeleteMyAccountMutation,
+  useUpdateUserRoleMutation,
 } = api;

@@ -304,6 +304,10 @@ export default function UserMenu({
                 false
               )
             }
+              sx={{textTransform: "none",
+
+              }}
+            
           >
             Cancel
           </Button>
@@ -313,6 +317,9 @@ export default function UserMenu({
             onClick={
               confirmLogout
             }
+            sx={{
+              textTransform:
+                "none",}}
           >
             Logout
           </Button>

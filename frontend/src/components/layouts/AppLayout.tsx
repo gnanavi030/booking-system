@@ -13,13 +13,32 @@ export default function AppLayout({
 }: AppLayoutProps) {
   return (
           <Box
-        sx={{
-          minHeight: "100vh",
-          position: "relative",
-          overflowX: "hidden",
+      
+  sx={{
+    minHeight: "100vh",
+    position: "relative",
+    overflowX: "hidden",
+    overflowY: "hidden",
 
-          background:
-            "radial-gradient(circle at top left, #1e3a8a 0%, #081028 45%, #020617 100%)",
+
+          background: `
+radial-gradient(
+circle at top left,
+rgba(99,102,241,.20),
+transparent 35%
+),
+radial-gradient(
+circle at bottom right,
+rgba(6,182,212,.15),
+transparent 40%
+),
+radial-gradient(
+circle at center,
+rgba(139,92,246,.10),
+transparent 45%
+),
+#020617
+`,
         }}
       >
 
@@ -102,8 +121,20 @@ export default function AppLayout({
     position: "relative",
     zIndex: 2,
     p: 2,
-    height: "100vh",
-    overflow: "hidden",
+    minHeight: "100vh",
+
+    overflowY: "hidden",
+    overflowX: "hidden",
+
+    "&::-webkit-scrollbar": {
+      width: "8px",
+    },
+
+    "&::-webkit-scrollbar-thumb": {
+      background:
+        "rgba(255,255,255,.15)",
+      borderRadius: "10px",
+    },
   }}
 >
         <>

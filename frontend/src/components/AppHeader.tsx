@@ -50,14 +50,23 @@ export default function AppHeader() {
   top: 10,
   zIndex: 9999,
 
-  padding: "18px 24px",
-  marginBottom: "24px",
+padding: "10px 18px",
+borderRadius: "16px",
 
-  background: "rgba(15,23,42,.95)",
-  backdropFilter: "blur(20px)",
+  background:
+  "rgba(15,23,42,.70)",
 
-  border: "1px solid rgba(255,255,255,.12)",
-  borderRadius: "20px",
+backdropFilter:
+  "blur(30px)",
+
+border:
+  "1px solid rgba(255,255,255,.08)",
+
+
+
+boxShadow:
+  "0 20px 50px rgba(0,0,0,.35)",
+
 }}
     >
       <div
@@ -72,18 +81,30 @@ export default function AppHeader() {
           paddingBottom:"4px",
         }}
       >
-        <div
-          onClick={() => router.push("/")}
-          style={{
-            cursor: "pointer",
-            color: "white",
-            fontWeight: 700,
-            fontSize: "22px",
-            marginRight: "24px",
-          }}
-        >
-          🏢 Room Booking
-        </div>
+       <div
+  onClick={() => router.push("/")}
+  style={{
+    cursor: "pointer",
+
+    background:
+      "linear-gradient(135deg,#60A5FA,#A855F7)",
+
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+
+    fontWeight: 900,
+    fontSize: "22px",
+
+    letterSpacing: "-1px",
+
+    marginRight: "28px",
+
+    textShadow:
+      "0 0 30px rgba(99,102,241,.4)",
+  }}
+>
+  ✨ Nova Spaces
+</div>
 
         {navItems.map((item) => (
           <button

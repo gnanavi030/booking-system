@@ -20,6 +20,9 @@ from pydantic import BaseModel
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from sqlalchemy import text
+from app.db.database import SessionLocal
+
 
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret123"
@@ -118,3 +121,23 @@ async def validation_exception_handler(request, exc):
     error = exc.errors()[0]
 
     return JSONResponse(status_code=422, content={"detail": error["msg"]})
+
+
+@app.on_event("startup")
+def startup_event():
+    seed_rooms()
+
+    db = SessionLocal()
+
+    try:
+        db.execute(text("""
+                SELECT setval(
+                    'bookings_id_seq',
+                    (SELECT COALESCE(MAX(id), 1) FROM bookings),
+                    true
+                );
+            """))
+        db.commit()
+
+    finally:
+        db.close()

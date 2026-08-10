@@ -37,7 +37,7 @@ export default function CalendarToolbar({
       }}
     >
       <Typography
-        fontSize={22}
+        fontSize={14}
         fontWeight={700}
       >
         📅 Schedule Planner

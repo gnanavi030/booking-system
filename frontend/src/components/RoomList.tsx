@@ -78,12 +78,9 @@ export default function RoomList({
         style={{
           padding: "10px",
           marginBottom: "8px",
-          borderRadius: "12px",
-          background:
-            "rgba(255,255,255,.07)",
-          backdropFilter: "blur(20px)",
-          border:
-            "1px solid rgba(255,255,255,.08)",
+          borderRadius: "8px",
+          background: "#1620330",
+          border: "1px solid rgba(255,255,255,.05)",
         }}
       >
         <div
@@ -127,15 +124,16 @@ export default function RoomList({
               )
             }
             style={{
-              marginBottom: "5px",
+              marginBottom: "2px",
               padding: "8px",
               cursor: "pointer",
 
-              borderRadius: "12px",
-
+              borderRadius: "8px",
               background: isSelected
-                ? `${roomColor}22`
-                : "rgba(255,255,255,.06)",
+              
+              ? `${roomColor}15`
+              
+              : "#162033",
 
               borderLeft: `4px solid ${roomColor}`,
 
@@ -144,24 +142,22 @@ export default function RoomList({
                   ? `1px solid ${roomColor}`
                   : "1px solid rgba(255,255,255,.08)",
 
-              boxShadow: isSelected
-                ? `0 0 18px ${roomColor}55`
-                : "none",
+              boxShadow:"none",
 
-              backdropFilter:
-                "blur(20px)",
 
               transition:
                 "all .2s ease",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform =
-                "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform =
-                "translateY(0)";
-            }}
+           onMouseEnter={(e) => {
+  e.currentTarget.style.background =
+    "#1C2840";
+}}
+           onMouseLeave={(e) => {
+  e.currentTarget.style.background =
+    isSelected
+      ? `${roomColor}15`
+      : "#162033";
+}}
           >
             <div
               style={{
@@ -169,7 +165,7 @@ export default function RoomList({
                 justifyContent:
                   "space-between",
                 alignItems: "center",
-                marginBottom: "4px",
+                marginBottom: "12px",
               }}
             >
               <div
