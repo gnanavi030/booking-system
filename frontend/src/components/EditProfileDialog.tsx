@@ -345,24 +345,6 @@ export default function EditProfileDialog({
               Security
             </Button>
 
-            <Button
-              color="error"
-              variant={
-                activeTab === "delete"
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() =>
-                setActiveTab(
-                  "delete"
-                )
-              }
-              sx={{
-                textTransform: "none",
-              }}
-            >
-              Delete Account
-            </Button>
           </Box>
 
           {activeTab === "account" && (

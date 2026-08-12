@@ -85,27 +85,17 @@ label {
   color: white;
 }
 
-/* SCROLLBAR */
+/* HIDE SCROLLBARS GLOBALLY */
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 0;
+  height: 0;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background:
-    rgba(255, 255, 255, 0.15);
-
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background:
-    rgba(255, 255, 255, 0.3);
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 /* MUI PAPER ENHANCEMENT */

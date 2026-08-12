@@ -23,6 +23,7 @@ def seed_role_permissions(db: Session):
             "booking:create",
             "booking:update",
             "room:view",
+            "booking:delete",
         ],
         "Viewer": [
             "booking:view",

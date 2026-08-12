@@ -22,6 +22,23 @@ export default function ScheduleGrid({
 
   const [open, setOpen] =
     useState(false);
+  const currentUser =
+    typeof window !== "undefined"
+      ? localStorage
+          .getItem("user")
+          ?.split("@")[0]
+      : "";
+
+  const permissions =
+    typeof window !== "undefined"
+      ? JSON.parse(
+          localStorage.getItem("permissions") || "[]"
+        )
+      : [];
+
+  const isAdmin =
+    permissions.includes("booking:update") &&
+    permissions.includes("booking:delete");
 
   const [selectedBooking, setSelectedBooking] =
     useState<any>(null);
@@ -107,6 +124,13 @@ if (isWeekend) {
     </Paper>
   );
 }
+const canModifyBooking =
+  selectedBooking &&
+  (
+    isAdmin ||
+    selectedBooking.user_name?.toLowerCase() ===
+      currentUser?.toLowerCase()
+  );
 
 return (
   <>
@@ -442,48 +466,44 @@ return (
                 }
               </Typography>
 
-              <Box
-                display="flex"
-                gap={2}
-              >
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    background:
-                      "linear-gradient(135deg,#3B82F6,#8B5CF6)",
-                    textTransform: "none",
-                  }}
-                  onClick={() => {
-                    console.log("EDIT BUTTON CLICKED");
-                    console.log(selectedBooking);
-
-                    onEdit?.(selectedBooking);
-
-                    setOpen(false);
-                  }}
+              {canModifyBooking && (
+                <Box
+                  display="flex"
+                  gap={2}
                 >
-                  Edit
-                </Button>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{
+                      background:
+                        "linear-gradient(135deg,#3B82F6,#8B5CF6)",
+                      textTransform: "none",
+                    }}
+                    onClick={() => {
+                      onEdit?.(selectedBooking);
+                      setOpen(false);
+                    }}
+                  >
+                    Edit
+                  </Button>
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="error"
-                  sx={{
-                    textTransform: "none",
-                  }}
-                  onClick={() => {
-                    onDelete?.(
-                      selectedBooking.id
-                    );
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="error"
+                    sx={{
+                      textTransform: "none",
+                    }}
+                    onClick={() => {
+                      onDelete?.(selectedBooking.id);
+                      setOpen(false);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              )}
 
-                    setOpen(false);
-                  }}
-                >
-                  Delete
-                </Button>
-              </Box>
             </>
           )}
         </Box>

@@ -82,12 +82,13 @@ def get_bookings(
 def delete_booking(
     booking_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(require_permission("booking:delete")),
+    current_user=Depends(require_permission("booking:update")),
 ):
     try:
         return delete_booking_service(
             db,
             booking_id,
+            current_user,
         )
 
     except HTTPException as e:
@@ -98,7 +99,7 @@ def delete_booking(
 
         raise HTTPException(
             status_code=500,
-            detail="Unexpected error occurred",
+            detail="str(e)",
         )
 
 
@@ -114,7 +115,12 @@ def update_booking(
 ):
 
     try:
-        return update_booking_service(db, booking_id, data)
+        return update_booking_service(
+            db,
+            booking_id,
+            data,
+            current_user,
+        )
 
     except HTTPException as e:
         raise e

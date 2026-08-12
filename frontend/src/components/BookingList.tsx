@@ -18,6 +18,8 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Snackbar,
+ Alert,
 } from "@mui/material";
 
 import { useRouter } from "next/navigation";
@@ -66,6 +68,8 @@ export default function BookingList({
 
   const [confirmOpen, setConfirmOpen] =
     useState(false);
+  const [successMessage, setSuccessMessage] =
+    useState("");
 
   const [
     bookingToDelete,
@@ -122,7 +126,9 @@ export default function BookingList({
 
       const currentUsername =
       typeof window !== "undefined"
-        ? localStorage.getItem("username")
+        ? localStorage
+            .getItem("user")
+            ?.split("@")[0]
         : null;
 
     const roles = JSON.parse(
@@ -450,11 +456,17 @@ if (isLoading) {
 
       {!isWeekend &&
          bookings.map((b: any) => {
+         console.log(
+  "Has Delete Permission:",
+  hasPermission("booking:delete")
+);
+
 
      
           const canManageBooking =
-            isAdmin ||
-            b.user_name === currentUsername;
+  isAdmin ||
+  b.user_name?.toLowerCase() ===
+    currentUsername?.toLowerCase();
 
           return (
             <Box
@@ -541,39 +553,59 @@ if (isLoading) {
                       setSelected(b);
                       setShowModal(true);
                     }}
-                    sx={{
-                      textTransform: "none",
-                      minWidth: "72px",
-                      height: "32px",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                    }}
-                  >
+                     sx={{
+                        textTransform: "none",
+                        minWidth: "78px",
+                        height: "34px",
+                        borderRadius: "10px",
+                        fontSize: "13px",
+                        fontWeight: 600,
+
+                        background:
+                          "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)",
+
+                        color: "#fff",
+
+                        boxShadow:
+                          "0 4px 14px rgba(59,130,246,0.35)",
+
+                        transition: "all .2s ease",
+
+                        "&:hover": {
+                          background:
+                            "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+
+                          transform: "translateY(-1px)",
+
+                          boxShadow:
+                            "0 8px 20px rgba(59,130,246,0.45)",
+                        },
+                      }}
+                                        >
                     Edit
                   </Button>
                 )}
 
-              {hasPermission("booking:delete") &&
-                canManageBooking && (
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => {
-                      setBookingToDelete(b.id);
-                      setConfirmOpen(true);
-                    }}
-                    sx={{
-                      textTransform: "none",
-                      minWidth: "80px",
-                      height: "32px",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                    }}
-                  >
-                    Delete
-                  </Button>
-                )}
+              {canManageBooking && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={() => {
+                    setBookingToDelete(b.id);
+                    setConfirmOpen(true);
+                  }}
+                  sx={{
+                    textTransform: "none",
+                    minWidth: "80px",
+                    height: "32px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
             </Box>
             </Box>
             );
@@ -674,59 +706,107 @@ if (isLoading) {
       />
 
       <Dialog
-        open={confirmOpen}
-        onClose={() =>
-          setConfirmOpen(false)
-        }
-      >
-        <DialogTitle>
-          Confirm Delete
-        </DialogTitle>
+  open={confirmOpen}
+  onClose={() =>
+    setConfirmOpen(false)
+  }
+  PaperProps={{
+    sx: {
+      background: "#162033",
+      color: "#fff",
+      borderRadius: "16px",
+      border:
+        "1px solid rgba(255,255,255,.08)",
+    },
+  }}
+>
+        <DialogTitle
+  sx={{
+    color: "#fff",
+    fontWeight: 700,
+  }}
+>
+  Delete Booking
+</DialogTitle>
 
-        <DialogContent>
-          Delete this booking?
-        </DialogContent>
+        <DialogContent
+  sx={{
+    color: "rgba(255,255,255,.75)",
+  }}
+>
+  Are you sure you want to delete this booking?
+</DialogContent>
+
 
         <DialogActions>
           <Button
-            onClick={() =>
-              setConfirmOpen(false)
-            }
-          >
-            Cancel
-          </Button>
+  onClick={() =>
+    setConfirmOpen(false)
+  }
+  sx={{
+    textTransform: "none",
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#2196F3",
+    background: "transparent",
 
-         <Button
-  color="error"
-  disabled={isDeletingBooking}
-  onClick={async () => {
-    if (
-      bookingToDelete !== null
-    ) {
-      await deleteBooking(
-        bookingToDelete
-      ).unwrap();
-    }
-
-    setConfirmOpen(false);
-    setBookingToDelete(null);
+    "&:hover": {
+      background: "transparent",
+      color: "#42A5F5",
+    },
   }}
 >
-  {isDeletingBooking ? (
-    <>
-      <CircularProgress
-        size={16}
-        color="inherit"
-        sx={{ mr: 1 }}
-      />
-      Deleting...
-    </>
-  ) : (
-    "Delete"
-  )}
+  Cancel
+</Button>
+
+
+        <Button
+  disabled={isDeletingBooking}
+  onClick={async () => {
+   if (bookingToDelete !== null) {
+  await deleteBooking(
+    bookingToDelete
+  ).unwrap();
+
+  setSuccessMessage(
+    "Booking deleted successfully"
+  );
+}
+
+setConfirmOpen(false);
+setBookingToDelete(null);
+  }}
+  sx={{
+    textTransform: "none",
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#FF3B30",
+    background: "transparent",
+
+    "&:hover": {
+      background: "transparent",
+      color: "#FF6259",
+    },
+  }}
+>
+  {isDeletingBooking
+    ? "Deleting..."
+    : "Delete"}
 </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+      >
+        <Alert
+          severity="success"
+          onClose={() => setSuccessMessage("")}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
   }

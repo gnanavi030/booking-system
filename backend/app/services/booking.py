@@ -146,7 +146,11 @@ def get_bookings_service(
 # ============================
 # ✅ DELETE BOOKING
 # ============================
-def delete_booking_service(db: Session, booking_id: int):
+def delete_booking_service(
+    db: Session,
+    booking_id: int,
+    current_user,
+):
 
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
 
@@ -155,6 +159,16 @@ def delete_booking_service(db: Session, booking_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Booking not found",
         )
+
+    # Admin can delete any booking
+    if False:
+
+        # Employee can delete only own bookings
+        if booking.user_name != current_user.username:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can delete only your own bookings",
+            )
 
     db.delete(booking)
     db.commit()
@@ -169,12 +183,25 @@ def delete_booking_service(db: Session, booking_id: int):
 # ============================
 # ✅ UPDATE BOOKING
 # ============================
-def update_booking_service(db: Session, booking_id: int, data):
+def update_booking_service(
+    db: Session,
+    booking_id: int,
+    data,
+    current_user,
+):
 
     booking = db.query(Booking).filter(Booking.id == booking_id).first()
 
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
+        # Admin can edit any booking
+
+        # Employee can edit only own bookings
+        if booking.user_name != current_user.username:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can edit only your own bookings",
+            )
 
     if data.user_name:
         user = (
