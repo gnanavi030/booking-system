@@ -491,6 +491,7 @@ if (day === 0 || day === 6) {
            <Select
     size="small"
     {...field}
+    error={!!errors.roomName}
     MenuProps={{
     PaperProps: {
       sx: {
@@ -535,7 +536,7 @@ if (day === 0 || day === 6) {
   }}
 >
 
-                error={!!errors.roomName}
+                
               
                 {roomsToShow.map((r: any) => (
                   <MenuItem
@@ -637,7 +638,7 @@ if (day === 0 || day === 6) {
                 size="small"
                 sx={glassField}
                 {...field}
-                error={!!errors.endTime}
+                
                 helperText={
                   errors.endTime?.message
                 }
@@ -660,6 +661,7 @@ if (day === 0 || day === 6) {
             <Select
   size="small"
   {...field}
+  error={!!errors.roomName}
   MenuProps={{
     PaperProps: {
       sx: {
@@ -697,10 +699,11 @@ if (day === 0 || day === 6) {
         "rgba(255,255,255,.12)",
     },
   }}
+  
 >
 
 
-                error={!!errors.reason}
+                
               
                 <MenuItem value="">
                   Select Reason

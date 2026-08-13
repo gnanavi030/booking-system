@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AppSkeleton from "./skeletons/AppSkeleton";
+import { useSnackbar } from "notistack";
+
 
 import {
   Box,
@@ -78,6 +80,8 @@ export default function BookingList({
 
   const [currentDate, setCurrentDate] =
     useState(new Date(selectedDate));
+  const { enqueueSnackbar } = useSnackbar();
+
 
   useEffect(() => {
     setPage(1);
@@ -768,9 +772,12 @@ if (isLoading) {
     bookingToDelete
   ).unwrap();
 
-  setSuccessMessage(
-    "Booking deleted successfully"
-  );
+ enqueueSnackbar(
+  "Booking deleted successfully ✅",
+  {
+    variant: "success",
+  }
+);
 }
 
 setConfirmOpen(false);
