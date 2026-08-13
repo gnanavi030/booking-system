@@ -27,7 +27,7 @@ def reset_password_service(
     return {"message": f"Password reset successfully for {user.username}"}
 
 
-# ✅ CREATE USER
+# CREATE USER
 def create_user_service(db: Session, data):
     existing = db.query(User).filter(User.email == data.email).first()
 
@@ -35,9 +35,9 @@ def create_user_service(db: Session, data):
         raise HTTPException(status_code=400, detail="Email already exists")
 
     user = User(
-        username=data.username,  # ✅ fixed field name
+        username=data.username,  
         email=data.email,
-        password=hash_password(data.password),  # ✅ HASHED PASSWORD
+        password=hash_password(data.password),  
     )
 
     db.add(user)
@@ -46,13 +46,13 @@ def create_user_service(db: Session, data):
     return user
 
 
-# ✅ GET ALL USERS
+# GET ALL USERS
 def get_users_service(db):
     users = db.query(User).all()
     return users
 
 
-# ✅ GET USER BY ID
+#  GET USER BY ID
 def get_user_service(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -62,7 +62,7 @@ def get_user_service(db: Session, user_id: int):
     return user
 
 
-# ✅ UPDATE USER
+# UPDATE USER
 def update_user_service(db: Session, user_id: int, data):
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -100,7 +100,7 @@ def update_user_service(db: Session, user_id: int, data):
     return user
 
 
-# ✅ DELETE USER
+#  DELETE USER
 def delete_user_service(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
 

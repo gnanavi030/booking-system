@@ -20,7 +20,6 @@ def get_room_availability_service(db: Session, start_time, end_time):
     result = []
 
     for room in rooms:
-        # ✅ Find overlapping bookings
         overlapping_bookings = (
             db.query(Booking)
             .filter(

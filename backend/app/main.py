@@ -35,11 +35,8 @@ def get_config():
 
 Base.metadata.create_all(bind=engine)
 
-# ✅ CREATE APP
 app = FastAPI()
 
-
-# ✅ CORS
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -51,8 +48,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# ✅ Seed rooms
 def seed_rooms():
     db = SessionLocal()
 
@@ -91,7 +86,7 @@ def root():
     return {"message": "Meeting Room Booking API running "}
 
 
-# ✅ ROUTERS
+# ROUTERS
 API_PREFIX = "/api/v1"
 
 app.include_router(auth.router, prefix=API_PREFIX)
@@ -103,7 +98,7 @@ app.include_router(room_api.router, prefix=API_PREFIX)
 app.include_router(user_router, prefix=API_PREFIX)
 
 
-# ✅ Redis test
+# Redis test
 from app.core.redis_client import redis_client
 
 

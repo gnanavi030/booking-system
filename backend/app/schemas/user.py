@@ -6,27 +6,27 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
-# ✅ REGISTER SCHEMA
+# REGISTER SCHEMA
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
 
 
-# ✅ LOGIN SCHEMA
+# LOGIN SCHEMA
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
 
-# ✅ UPDATE SCHEMA
+# UPDATE SCHEMA
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
 
 
-# ✅ RESPONSE SCHEMA
+# RESPONSE SCHEMA
 from typing import List
 
 

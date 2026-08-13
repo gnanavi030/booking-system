@@ -10,7 +10,7 @@ from app.core.redis_client import redis_client
 
 
 # ============================
-# ✅ CREATE BOOKING
+# CREATE BOOKING
 # ============================
 def create_booking_service(db: Session, data):
 
@@ -76,7 +76,7 @@ def create_booking_service(db: Session, data):
 
 
 # ============================
-# ✅ GET BOOKINGS ✅ FIXED
+#  GET BOOKINGS 
 # ============================
 from sqlalchemy.orm import Session
 from app.models.booking import Booking
@@ -144,7 +144,7 @@ def get_bookings_service(
 
 
 # ============================
-# ✅ DELETE BOOKING
+# DELETE BOOKING
 # ============================
 def delete_booking_service(
     db: Session,
@@ -173,7 +173,6 @@ def delete_booking_service(
     db.delete(booking)
     db.commit()
 
-    # ✅ clear cache
     for key in redis_client.scan_iter("bookings:*"):
         redis_client.delete(key)
 
@@ -181,7 +180,7 @@ def delete_booking_service(
 
 
 # ============================
-# ✅ UPDATE BOOKING
+# UPDATE BOOKING
 # ============================
 def update_booking_service(
     db: Session,
@@ -243,14 +242,14 @@ def update_booking_service(
 
         booking.required_capacity = data.required_capacity
 
-    # ✅ Validate time
+    #Validate time
     if booking.end_time <= booking.start_time:
         raise HTTPException(status_code=400, detail="Invalid time range")
 
     db.commit()
     db.refresh(booking)
 
-    # ✅ clear cache
+    # clear cache
     for key in redis_client.scan_iter("bookings:*"):
         redis_client.delete(key)
 

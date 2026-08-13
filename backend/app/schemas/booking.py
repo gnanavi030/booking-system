@@ -6,7 +6,7 @@ from typing import List
 
 
 # ============================
-# ✅ CREATE SCHEMA
+# CREATE SCHEMA
 # ============================
 class BookingCreate(BaseModel):
     user_name: str
@@ -22,7 +22,7 @@ class BookingCreate(BaseModel):
 
 
 # ============================
-# ✅ RESPONSE SCHEMA
+# RESPONSE SCHEMA
 # ============================
 class BookingResponse(BaseModel):
     id: int
@@ -37,7 +37,7 @@ class BookingResponse(BaseModel):
 
 
 # ============================
-# ✅ UPDATE SCHEMA
+#  UPDATE SCHEMA
 # ============================
 class BookingUpdate(BaseModel):
     user_name: Optional[str] = None

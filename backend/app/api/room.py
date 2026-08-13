@@ -16,7 +16,7 @@ from app.core.redis_client import redis_client
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
 
-# ✅ GET ALL ROOMS (no caching here for now)
+# GET ALL ROOMS (no caching here for now)
 @router.get("/", response_model=list[RoomResponse])
 def get_rooms(
     db: Session = Depends(get_db),
@@ -25,7 +25,7 @@ def get_rooms(
     return get_rooms_service(db)
 
 
-# ✅ AVAILABILITY API WITH REDIS CACHE
+# AVAILABILITY API WITH REDIS CACHE
 @router.get("/availability")
 def check_availability(
     start_time: str = Query(...),
@@ -34,22 +34,22 @@ def check_availability(
     db: Session = Depends(get_db),
     current_user=Depends(require_permission("room:view")),
 ):
-    # ✅ Create cache key (inside function )
+   
     cache_key = f"availability:{start_time}:{end_time}:{required_capacity}"
 
-    # ✅ Check Redis first
+ 
     cached = redis_client.get(cache_key)
     if cached:
-        print("✅ Availability from Redis")
+        print(" Availability from Redis")
         return json.loads(cached)
 
-    print("❌ Availability from DB")
+    print(" Availability from DB")
 
-    # ✅ Validation
+    #  Validation
     if required_capacity <= 0 or required_capacity >= 100:
         raise HTTPException(status_code=400, detail="Capacity must be between 1 and 99")
 
-    # ✅ Convert time
+    # Convert time
     try:
         start_time_obj = datetime.strptime(start_time, "%I:%M %p").time()
         end_time_obj = datetime.strptime(end_time, "%I:%M %p").time()
@@ -60,7 +60,7 @@ def check_availability(
 
     available_rooms = []
 
-    # ✅ Filter rooms based on capacity
+    # Filter rooms based on capacity
     rooms = db.query(Room).filter(Room.capacity >= required_capacity).all()
 
     for room in rooms:
@@ -85,7 +85,7 @@ def check_availability(
 
     result = {"available_rooms": available_rooms}
 
-    # ✅ Store in Redis (TTL 60 seconds)
+    # Store in Redis (TTL 60 seconds)
     redis_client.setex(cache_key, 60, json.dumps(result))
 
     return result

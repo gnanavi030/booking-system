@@ -7,9 +7,8 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // ✅ remove token
-
-    // ✅ redirect to login page
+    localStorage.removeItem("token"); 
+    
     router.push("/login?logout=1");
   };
 

@@ -23,7 +23,7 @@ from app.services.booking import (
 router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
 
-# ✅ CREATE BOOKING
+# CREATE BOOKING
 
 
 @router.post("/", response_model=BookingResponse)
@@ -40,12 +40,12 @@ def create_booking(
         raise e
 
     except Exception as e:
-        print("❌ CREATE ERROR:", e)
+        print("CREATE ERROR:", e)
 
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ GET BOOKINGS
+# GET BOOKINGS
 @router.get("/", response_model=PaginatedBookings)
 def get_bookings(
     user_name: str = None,
@@ -73,11 +73,11 @@ def get_bookings(
         raise e
 
     except Exception as e:
-        print("❌ GET ERROR:", e)
+        print("GET ERROR:", e)
         raise HTTPException(status_code=500, detail="Unexpected error occurred")
 
 
-# ✅ DELETE BOOKING
+#  DELETE BOOKING
 @router.delete("/{booking_id}", response_model=dict)
 def delete_booking(
     booking_id: int,
@@ -95,7 +95,7 @@ def delete_booking(
         raise e
 
     except Exception as e:
-        print("❌ DELETE ERROR:", e)
+        print(" DELETE ERROR:", e)
 
         raise HTTPException(
             status_code=500,
@@ -103,7 +103,7 @@ def delete_booking(
         )
 
 
-# ✅ UPDATE BOOKING
+#  UPDATE BOOKING
 
 
 @router.patch("/{booking_id}")
@@ -126,5 +126,5 @@ def update_booking(
         raise e
 
     except Exception as e:
-        print("❌ UPDATE ERROR:", e)
+        print(" UPDATE ERROR:", e)
         raise HTTPException(status_code=500, detail="Unexpected error occurred")

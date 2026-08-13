@@ -32,7 +32,7 @@ from app.services.user import (
     update_user_service,
 )
 
-# ✅ GET ALL USERS (from DB)
+#  GET ALL USERS
 from typing import List
 from app.schemas.user import UserResponse
 
@@ -59,7 +59,7 @@ def get_users(
         db.close()
 
 
-# ✅ GET REGISTERED USERS (same as all users here)
+# GET REGISTERED USERS 
 @router.get("/registers", response_model=dict[str, List[UserResponse]])
 def get_registered_users(
     current_user=Depends(require_permission("user:view")),
@@ -71,15 +71,15 @@ def get_registered_users(
     return {"registered_users": users}
 
 
-# ✅ GET LOGIN LOGS (if stored separately later)
+# GET LOGIN LOGS 
 @router.get("/logins")
 def get_login_logs(
     current_user=Depends(require_permission("user:admin")),
 ):
-    return {"logins": "Implement login logs later ✅"}
+    return {"logins": "Implement login logs later "}
 
 
-# ✅ DELETE USER
+# DELETE USER
 @router.delete("/{user_id}")
 def delete_user(user_id: int):
     return {"message": "User deletion has moved to /auth/me"}
