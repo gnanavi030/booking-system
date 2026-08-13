@@ -72,18 +72,18 @@ flowchart TD
     A[Visit app] --> B{Authenticated?}
     B -->|No| C[Register or Login]
     C --> D[Receive access + refresh JWT]
-    D --> E[Store tokens / roles / permissions]
+    D --> E[Store tokens, roles, permissions]
     B -->|Yes| F[Enter protected app]
     E --> F
     F --> G{Permission check}
-    G -->|Denied| H[/unauthorized]
-    G -->|Allowed| I[Dashboard / List / Calendar / Booking]
+    G -->|Denied| H[Unauthorized page]
+    G -->|Allowed| I[Dashboard, List, Calendar, Booking]
     I --> J[Check room availability]
     J --> K[Create or update booking]
     K --> L{Conflict or rule fail?}
-    L -->|Yes| M[Show error / conflict alert]
-    L -->|No| N[Persist booking + invalidate cache]
-    N --> O[Refresh list / calendar]
+    L -->|Yes| M[Show error or conflict alert]
+    L -->|No| N[Persist booking and invalidate cache]
+    N --> O[Refresh list or calendar]
 ```
 
 ### Seeded rooms (startup)
@@ -150,8 +150,8 @@ On API startup, the following rooms are inserted if missing:
 
 ```mermaid
 flowchart LR
-    U[Browser User] --> FE[Next.js Frontend<br/>localhost:3000]
-    FE -->|REST JSON + Bearer JWT| BE[FastAPI Backend<br/>/api/v1]
+    U[Browser User] --> FE[Next.js Frontend]
+    FE -->|REST JSON + Bearer JWT| BE[FastAPI Backend]
     BE --> PG[(PostgreSQL)]
     BE --> RD[(Redis)]
     BE -.->|Alembic migrations| PG
@@ -162,20 +162,20 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph Frontend["frontend/"]
+    subgraph Frontend[frontend]
         Pages[App Router Pages]
         UI[MUI Components]
         RTK[RTK Query API Layer]
-        AuthFE[localStorage Auth<br/>roles + permissions]
+        AuthFE[localStorage Auth]
         Pages --> UI
         UI --> RTK
         RTK --> AuthFE
     end
 
-    subgraph Backend["backend/app/"]
-        API[API Routers<br/>auth · bookings · rooms · users]
-        Deps[Dependencies<br/>JWT + RBAC]
-        Svc[Services<br/>business rules]
+    subgraph Backend[backend app]
+        API[API Routers]
+        Deps[JWT and RBAC Dependencies]
+        Svc[Services]
         Models[SQLAlchemy Models]
         Schemas[Pydantic Schemas]
         API --> Deps
@@ -184,7 +184,7 @@ flowchart TB
         Svc --> Models
     end
 
-    RTK -->|HTTP /api/v1| API
+    RTK -->|HTTP api v1| API
     Models --> PG[(PostgreSQL)]
     Svc --> RD[(Redis)]
 ```
@@ -247,55 +247,55 @@ This section describes the relational model: entities, attributes, keys, relatio
 
 ```mermaid
 erDiagram
-    USERS ||--o{ BOOKINGS : "places"
-    ROOMS ||--o{ BOOKINGS : "hosts"
-    USERS ||--o{ USER_ROLES : "has"
-    ROLES ||--o{ USER_ROLES : "assigned to"
-    ROLES ||--o{ ROLE_PERMISSIONS : "grants"
-    PERMISSIONS ||--o{ ROLE_PERMISSIONS : "granted by"
+    USERS ||--o{ BOOKINGS : places
+    ROOMS ||--o{ BOOKINGS : hosts
+    USERS ||--o{ USER_ROLES : has
+    ROLES ||--o{ USER_ROLES : assigned_to
+    ROLES ||--o{ ROLE_PERMISSIONS : grants
+    PERMISSIONS ||--o{ ROLE_PERMISSIONS : granted_by
 
     USERS {
         int id PK
-        string username UK "max 25, unique"
-        string email UK "unique"
-        string password "bcrypt hash"
+        string username UK
+        string email UK
+        string password
     }
 
     ROLES {
         int id PK
-        string name UK "Admin|Employee|Viewer"
+        string name UK
         string description
     }
 
     PERMISSIONS {
         int id PK
-        string name UK "e.g. booking:create"
+        string name UK
         string description
     }
 
     USER_ROLES {
-        int user_id PK_FK
-        int role_id PK_FK
+        int user_id PK, FK
+        int role_id PK, FK
     }
 
     ROLE_PERMISSIONS {
-        int role_id PK_FK
-        int permission_id PK_FK
+        int role_id PK, FK
+        int permission_id PK, FK
     }
 
     ROOMS {
         int id PK
-        string name UK "unique"
+        string name UK
         int capacity
     }
 
     BOOKINGS {
         int id PK
         int user_id FK
-        string user_name "denormalized"
+        string user_name
         int room_id FK
         int required_capacity
-        date date
+        date booking_date
         time start_time
         time end_time
         string reason
@@ -306,17 +306,17 @@ erDiagram
 
 ```mermaid
 flowchart TB
-    subgraph Identity["Identity & Access"]
-        users["users<br/>─────────────<br/>id PK<br/>username UNIQUE NOT NULL<br/>email UNIQUE NOT NULL<br/>password NOT NULL"]
-        roles["roles<br/>─────────────<br/>id PK<br/>name UNIQUE NOT NULL<br/>description NULL"]
-        permissions["permissions<br/>─────────────<br/>id PK<br/>name UNIQUE NOT NULL<br/>description NULL"]
-        user_roles["user_roles<br/>─────────────<br/>user_id PK, FK → users.id CASCADE<br/>role_id PK, FK → roles.id CASCADE"]
-        role_permissions["role_permissions<br/>─────────────<br/>role_id PK, FK → roles.id CASCADE<br/>permission_id PK, FK → permissions.id CASCADE"]
+    subgraph Identity[Identity and Access]
+        users[users]
+        roles[roles]
+        permissions[permissions]
+        user_roles[user_roles]
+        role_permissions[role_permissions]
     end
 
-    subgraph Scheduling["Scheduling"]
-        rooms["rooms<br/>─────────────<br/>id PK<br/>name UNIQUE NOT NULL<br/>capacity INT"]
-        bookings["bookings<br/>─────────────<br/>id PK<br/>user_id FK → users.id<br/>user_name NOT NULL<br/>room_id FK → rooms.id<br/>required_capacity INT<br/>date DATE NOT NULL<br/>start_time TIME<br/>end_time TIME<br/>reason TEXT/STR"]
+    subgraph Scheduling[Scheduling]
+        rooms[rooms]
+        bookings[bookings]
     end
 
     users --- user_roles
@@ -403,17 +403,17 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    subgraph PKs
+    subgraph PKs[Primary Keys]
         U_PK[users.id]
         R_PK[roles.id]
         P_PK[permissions.id]
         RM_PK[rooms.id]
         B_PK[bookings.id]
-        UR_PK["user_roles(user_id, role_id)"]
-        RP_PK["role_permissions(role_id, permission_id)"]
+        UR_PK[user_roles composite PK]
+        RP_PK[role_permissions composite PK]
     end
 
-    subgraph Unique
+    subgraph UniqueKeys[Unique Keys]
         U_UN[users.username]
         U_EM[users.email]
         R_UN[roles.name]
@@ -421,13 +421,13 @@ flowchart LR
         RM_UN[rooms.name]
     end
 
-    subgraph FKs
-        UR_U[user_roles.user_id → users.id]
-        UR_R[user_roles.role_id → roles.id]
-        RP_R[role_permissions.role_id → roles.id]
-        RP_P[role_permissions.permission_id → permissions.id]
-        B_U[bookings.user_id → users.id]
-        B_R[bookings.room_id → rooms.id]
+    subgraph FKs[Foreign Keys]
+        UR_U[user_roles.user_id to users.id]
+        UR_R[user_roles.role_id to roles.id]
+        RP_R[role_permissions.role_id to roles.id]
+        RP_P[role_permissions.permission_id to permissions.id]
+        B_U[bookings.user_id to users.id]
+        B_R[bookings.room_id to rooms.id]
     end
 ```
 
@@ -447,20 +447,16 @@ classDiagram
         +str username
         +str email
         +str password
-        +roles: List~Role~
     }
     class Role {
         +int id
         +str name
         +str description
-        +users: List~User~
-        +permissions: List~Permission~
     }
     class Permission {
         +int id
         +str name
         +str description
-        +roles: List~Role~
     }
     class UserRole {
         +int user_id
@@ -474,7 +470,6 @@ classDiagram
         +int id
         +str name
         +int capacity
-        +bookings: List~Booking~
     }
     class Booking {
         +int id
@@ -482,17 +477,16 @@ classDiagram
         +str user_name
         +int room_id
         +int required_capacity
-        +date date
+        +date booking_date
         +time start_time
         +time end_time
         +str reason
-        +room: Room
     }
 
     User "M" -- "M" Role : via UserRole
     Role "M" -- "M" Permission : via RolePermission
     User "1" --> "N" Booking : user_id
-    Room "1" --> "N" Booking : room_id / back_populates
+    Room "1" --> "N" Booking : room_id
 ```
 
 ### 5.7 Booking conflict model (same room + date)
@@ -508,18 +502,18 @@ AND same date
 
 ```mermaid
 flowchart TD
-    A[Create / update booking] --> B{Room exists?}
+    A[Create or update booking] --> B{Room exists?}
     B -->|No| E1[404 Room not found]
     B -->|Yes| C{User exists?}
     C -->|No| E2[404 User not found]
-    C -->|Yes| D{required_capacity ≤ room.capacity?}
+    C -->|Yes| D{Capacity within room limit?}
     D -->|No| E3[400 Capacity not met]
-    D -->|Yes| F{end_time > start_time?}
+    D -->|Yes| F{end_time after start_time?}
     F -->|No| E4[400 Invalid time range]
-    F -->|Yes| G{Overlap on room + date?}
+    F -->|Yes| G{Overlap on room and date?}
     G -->|Yes| E5[400 Room already booked]
     G -->|No| H[Persist booking]
-    H --> I[Invalidate Redis bookings:* keys]
+    H --> I[Invalidate Redis booking keys]
     I --> J[Return BookingResponse]
 ```
 
@@ -582,12 +576,12 @@ alembic downgrade -1
 ```mermaid
 flowchart LR
     BF[BookingForm] --> RTK[createBooking mutation]
-    RTK --> BR[POST /bookings/]
-    BR --> RP[require_permission booking:create]
+    RTK --> BR[POST bookings]
+    BR --> RP[require_permission booking create]
     RP --> BS[create_booking_service]
-    BS --> DB[(bookings / rooms / users)]
+    BS --> DB[(DB tables)]
     BS --> RD[(Redis invalidate)]
-    BR --> UI[BookingResponse → invalidate Bookings tag]
+    BR --> UI[Return BookingResponse]
 ```
 
 ---
@@ -598,14 +592,14 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    R[POST /auth/register] --> V[Validate username + password rules]
+    R[POST auth register] --> V[Validate username and password rules]
     V --> H[Hash password with bcrypt]
     H --> S[Save user]
     S --> VR[Assign Viewer role]
-    L[POST /auth/login] --> A[Verify email + password]
-    A --> T[Issue access_token 1h + refresh_token 7d]
-    T --> FE[Frontend stores tokens & loads /auth/me]
-    FE --> P[Cache roles + permissions in localStorage]
+    L[POST auth login] --> A[Verify email and password]
+    A --> T[Issue access and refresh tokens]
+    T --> FE[Frontend stores tokens and loads me]
+    FE --> P[Cache roles and permissions]
 ```
 
 | Endpoint | Behavior |
@@ -669,14 +663,14 @@ Frontend mirrors checks with `hasPermission()` and `<ProtectedRoute permission="
 
 ```mermaid
 flowchart TD
-    Root["/"] -->|booking:view| Home[Schedule / home]
-    Login["/login"] --> Auth[Login + Register forms]
-    Booking["/booking"] -->|booking:view| BookUI[Booking workspace]
-    List["/list"] -->|booking:view| ListUI[Filtered booking list]
-    Cal["/calendar"] --> CalUI[Calendar view]
-    Dash["/dashboard"] --> DashUI[Utilization cards]
-    Users["/users"] -->|user:view| UsersUI[User admin]
-    Unauth["/unauthorized"] --> Msg[Permission denied page]
+    Root[Home route] -->|booking:view| Home[Schedule home]
+    Login[Login route] --> Auth[Login and Register forms]
+    Booking[Booking route] -->|booking:view| BookUI[Booking workspace]
+    List[List route] -->|booking:view| ListUI[Filtered booking list]
+    Cal[Calendar route] --> CalUI[Calendar view]
+    Dash[Dashboard route] --> DashUI[Utilization cards]
+    Users[Users route] -->|user:view| UsersUI[User admin]
+    Unauth[Unauthorized route] --> Msg[Permission denied page]
 ```
 
 | Route | Purpose | Guard |
@@ -863,14 +857,14 @@ Query params for availability:
 
 ```mermaid
 flowchart TD
-    A[GET /rooms/availability] --> B{Redis key exists?}
+    A[GET rooms availability] --> B{Redis key exists?}
     B -->|Yes| C[Return cached JSON]
-    B -->|No| D[Query rooms + bookings]
+    B -->|No| D[Query rooms and bookings]
     D --> E[Build available_rooms]
     E --> F[SETEX key TTL 60s]
     F --> G[Return result]
 
-    H[Create / Update / Delete booking] --> I[SCAN bookings:*]
+    H[Create Update or Delete booking] --> I[SCAN booking cache keys]
     I --> J[DELETE matching keys]
 ```
 
@@ -985,12 +979,12 @@ Redis host/port are currently hard-coded to `localhost:6379` in `app/core/redis_
 ```mermaid
 flowchart LR
     A[Start PostgreSQL] --> B[Start Redis]
-    B --> C[Configure backend/.env]
-    C --> D[Create venv + install deps]
+    B --> C[Configure backend env]
+    C --> D[Create venv and install deps]
     D --> E[alembic upgrade head]
-    E --> F[uvicorn app.main:app]
-    F --> G[npm run dev in frontend]
-    G --> H[Open :3000 and /docs]
+    E --> F[Start uvicorn API]
+    F --> G[Start Next.js frontend]
+    G --> H[Open app and API docs]
 ```
 
 1. Start PostgreSQL and create the app database  
